@@ -2,7 +2,6 @@ appnope==0.1.0
 coverage==4.4.1
 decorator==4.0.11
 Django==1.11.2
--e git+https://github.com/owy1/django-imager.git@bf462903bc8bf30b485939bbd8dfc646fe32e88a#egg=django_imager
 ipython==6.1.0
 ipython-genutils==0.2.0
 jedi==0.10.2
