@@ -1,0 +1,1 @@
+This is an exerise to build a photo repository with Django
