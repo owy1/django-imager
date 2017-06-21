@@ -1,6 +1,6 @@
 language: python
 python:
-  - "2.7"
+  # - "2.7"
   - "3.6"
 
 install:
@@ -10,4 +10,8 @@ install:
 services:
   - postgresql
 
-script: python django_imager/manage.py py.test --no input
+before_script:
+  - psql -c 'create database test_db;' -U postgresql
+
+script: python imagersite/manage.py test --no input
+
