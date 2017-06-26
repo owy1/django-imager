@@ -1,0 +1,9 @@
+{% extends 'imagersite/base.html' %}
+{% block body %}
+    <h1 style='color: red'>imagersite homepage</h1>
+    <ul>
+        <li><a href="{% url 'registration_register' %}">Register</a></li>
+        <li><a href="{% url 'auth_login' %}">Login</a></li>
+        <li><a href="{% url 'auth_logout' %}">Logout</a></li>
+    </ul>
+{% endblock %}

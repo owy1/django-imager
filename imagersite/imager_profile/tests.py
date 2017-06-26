@@ -1,6 +1,8 @@
-from django.test import TestCase
+from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
+from django.urls import reverse
 from imager_profile.models import ImagerProfile
+from imagersite.views import home_view
 
 import factory
 # Create your tests here.
@@ -27,13 +29,13 @@ class ProfileTestCase(TestCase):
         self.users = users
 
     def test_every_profile_must_have_a_user(self):
-        """Test for profile instances."""
+        """Test for profile instance error message."""
         with self.assertRaises(Exception):
             patron = ImagerProfile()
             patron.save()
 
     def test_profile_with_user_prints_username(self):
-        """."""
+        """Test for profile instance."""
         some_profile = ImagerProfile.objects.first()
         self.assertTrue(str(some_profile), some_profile.user.username)
 

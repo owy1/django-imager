@@ -1,3 +1,15 @@
+"""Home Page View."""
+
+
 from django.shortcuts import render
 
-# Create your views here.
+
+def home_view(request):
+    """View for homepage."""
+    context = {'greeting': 'Hello World'}
+    return render(
+        request,
+        'imagersite/home.html',
+        context=context
+    )
+
