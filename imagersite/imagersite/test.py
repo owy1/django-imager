@@ -56,12 +56,16 @@ class RegistrationTests(TestCase):
         )
         self.assertFalse(User.objects.first().is_active)
 
-    def test_upon_user_login(self):
+    def test_valid_user_login(self):
         """Test login process."""
         user = User.objects.create_user(username='fred', email='test@test.com', password='temporary')
         self.client.login(username='fred', password='temporary')
         response = self.client.get('/login/', follow=True)
         self.assertTrue(response.context['user'].is_active)
+
+    def test_non_valid_user_login(self):
+        """Test login process."""
+        pass
 
     def test_upon_user_logout(self):
         """Test logout process."""
