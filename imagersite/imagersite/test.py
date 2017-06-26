@@ -23,7 +23,7 @@ class RegistrationTests(TestCase):
         """Test registration process."""
         self.assertTrue(User.objects.count() == 0)
         response = self.client.get(reverse('registration_register'))
-        html = BeautifulSoup(response.rendered_content)
+        html = BeautifulSoup(response.rendered_content, 'html.parser')
         token = html.find('input', {'name': 'csrfmiddlewaretoken'}).attrs['value']
         data_dict = {
             'csrfmiddlewaretoken': token,
@@ -41,7 +41,7 @@ class RegistrationTests(TestCase):
     def test_upon_registration_new_user_notactive(self):
         """Test registration process."""
         response = self.client.get(reverse('registration_register'))
-        html = BeautifulSoup(response.rendered_content, from_encoding='utf-8')
+        html = BeautifulSoup(response.rendered_content, 'html.parser')
         token = html.find('input', {'name': 'csrfmiddlewaretoken'}).attrs['value']
         data_dict = {
             'csrfmiddlewaretoken': token,
@@ -58,14 +58,46 @@ class RegistrationTests(TestCase):
 
     def test_valid_user_login(self):
         """Test login process."""
-        user = User.objects.create_user(username='fred', email='test@test.com', password='temporary')
+        user = User(username='fred', email='test@test.com')
+        user.set_password('temporary')
+        user.save()
         self.client.login(username='fred', password='temporary')
         response = self.client.get('/login/', follow=True)
         self.assertTrue(response.context['user'].is_active)
 
-    def test_non_valid_user_login(self):
+    def test_invalid_user_login_blank_username(self):
+        """Test login username is blank."""
+        self.client.login(username='', password='temporary')
+        response = self.client.get('/login/', follow=True)
+        self.assertFalse(response.context['user'].is_authenticated)
+
+
+    def test_invalid_user_login_blank_password(self):
+        """Test login username is blank."""
+        self.client.login(username='fred', password='')
+        response = self.client.get('/login/', follow=True)
+        self.assertFalse(response.context['user'].is_authenticated)
+
+
+    def test_invalid_user_login_username(self):
         """Test login process."""
-        pass
+        user = User(username='fred', email='test@test.com')
+        user.set_password('temporary')
+        user.save()
+        self.client.login(username='bill', password='temporary')
+        response = self.client.get('/login/', follow=True)
+        self.assertFalse(response.context['user'].is_authenticated)
+
+
+    def test_invalid_user_login_password(self):
+        """Test login process."""
+        user = User(username='fred', email='test@test.com')
+        user.set_password('temporary')
+        user.save()
+        self.client.login(username='fred', password='temp')
+        response = self.client.get('/login/', follow=True)
+        self.assertFalse(response.context['user'].is_authenticated)
+
 
     def test_upon_user_logout(self):
         """Test logout process."""

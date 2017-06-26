@@ -2,7 +2,7 @@ from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
 from django.urls import reverse
 from imager_profile.models import ImagerProfile
-from imagersite.views import home_view
+from imager_profile.views import home_view
 
 import factory
 # Create your tests here.
