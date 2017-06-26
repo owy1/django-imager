@@ -41,8 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'imager_profile',
-    'imagersite',
-    'registration'
+    'imagersite'
 ]
 
 MIDDLEWARE = [
