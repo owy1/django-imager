@@ -1,9 +1,18 @@
 {% extends 'imagersite/base.html' %}
 {% block body %}
-    <h1 style='color: red'>imagersite homepage</h1>
-    <ul>
-        <li><a href="{% url 'registration_register' %}">Register</a></li>
-        <li><a href="{% url 'auth_login' %}">Login</a></li>
-        <li><a href="{% url 'auth_logout' %}">Logout</a></li>
-    </ul>
+<div class="homepage">
+    {% if user.is_authenticated %}
+        <h3>Welcome back, {{ user }}</h3>
+        <a href="{% url 'imager_profile:user_profile' %}">{{ user }} Profile</a>
+
+        <h3>Links to Other Profiles:</h3>
+        <ul>
+            {% for user in userlist %}
+                <li><a href="{% url 'imager_profile:others_profile' user.username %}">{{ user.username }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h3>Please Log In or Register</h3>
+    {% endif %}
+</div> <!-- homepage -->
 {% endblock %}

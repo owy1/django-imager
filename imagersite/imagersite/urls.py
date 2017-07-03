@@ -14,17 +14,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url, include
+from django.conf.urls.static import static
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
-from imager_profile.views import (
-    home_view
-)
+from . import views
+
+app_name = 'imagersite'
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', home_view, name='home'),
+    url(r'^$', views.home_view, name='home'),
     url(r'^login/$', auth_views.login, name='login'),
     url(r'^logout/$', auth_views.logout, {'next_page': '/'}, name='logout'),
-    url(r'^accounts/', include('registration.backends.hmac.urls'))
+    url(r'^accounts/', include('registration.backends.hmac.urls')),
+    url(r'^profile/', include('imager_profile.urls')),
+    url(r'^images/', include('imager_images.urls')),
 ]
-# + static (settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+if settings.DEBUG:
+    urlpatterns += (
+        static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    )
+    urlpatterns += (
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    )

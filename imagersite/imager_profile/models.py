@@ -1,4 +1,4 @@
-"""."""
+"""Model for Imager_profile."""
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -27,8 +27,6 @@ SOCIAL_STATUS = (
     ('Scholar', 'Scholar')
 )
 
-AGE_CHOICES = [(i, i) for i in range(0, 100)]
-
 
 class ProfileManager(models.Manager):
     """Manage profiles."""
@@ -39,6 +37,7 @@ class ProfileManager(models.Manager):
 
 
 # Create your models here.
+@python_2_unicode_compatible
 class ImagerProfile(models.Model):
     """A profile for users to our applications."""
 
@@ -67,7 +66,7 @@ class ImagerProfile(models.Model):
     )
     location = models.CharField(max_length=255, blank=True, null=True)
     job = models.CharField(max_length=25, blank=True, null=True)
-    age = models.IntegerField(choices=AGE_CHOICES, null=True)
+    age = models.IntegerField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
 
     objects = models.Manager()
@@ -86,6 +85,10 @@ class ImagerProfile(models.Model):
         photography_style: {}
         social_status: {}
         """.format(self.user.username, self.camera_type, self.photography_style, self.social_status)
+
+    # def __str__(self):
+    #     """Print username."""
+    #     self.__repr__()
 
 
 @receiver(post_save, sender=User)

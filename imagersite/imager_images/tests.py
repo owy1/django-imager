@@ -1,20 +1,17 @@
 """Create your tests here."""
 
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth.models import User
 from django.conf import settings
 from imager_images.models import Photo, Album
 import factory
 import faker
-from imager_profile.models import ImagerProfile
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
 import datetime
 
 
 HERE = os.path.dirname(__file__)
-
-
 fake = faker.Faker()
 
 
@@ -44,8 +41,10 @@ class AlbumFactory(factory.django.DjangoModelFactory):
 
 
 class PhotoTests(TestCase):
+    """Photo test case."""
 
     def setUp(self):
+        """Setup user fred."""
         user = User(
             username='fred',
             email='fred@fred.com'
@@ -59,21 +58,35 @@ class PhotoTests(TestCase):
         self.photo = photo
 
     def test_upload_image_adds_new_photo_instance(self):
+        """Test new photo instance."""
         self.assertEqual(Photo.objects.count(), 1)
 
+    def test_photo_assigned_to_test_bob(self):
+        """Test that fred is photo builder."""
+        test_bob = User()
+        test_bob.username = 'test_bob'
+        test_bob.save()
+        test_photo = Photo(user=test_bob)
+        test_photo.save()
+        self.assertTrue(test_photo.user.username == "test_bob")
+
     def test_new_photo_is_private_by_default(self):
+        """Test default published status."""
         self.assertEqual(self.photo.published, "PV")
 
-    def test_new_photo_choose_PB(self):
+    def test_new_photo_choose(self):
+        """Test assigned published status."""
         self.photo.published = 'PB'
         self.photo.save()
         self.assertEqual(self.photo.published, "PB")
 
     def test_delete_user_with_photos_photos_removed(self):
+        """Test delete user all objects."""
         self.user.delete()
         self.assertTrue(Photo.objects.count() == 0)
 
     def test_uploaded_photo_lives_in_media_user_photos(self):
+        """Test media upload."""
         upload_dir = os.path.join(settings.MEDIA_ROOT, 'user_images')
         directory_contents = os.listdir(upload_dir)
         name = self.photo.photo.name.split('/')[1]
@@ -81,8 +94,10 @@ class PhotoTests(TestCase):
 
 
 class AlbumsTestCase(TestCase):
+    """Album test case."""
 
     def setUp(self):
+        """Setup user fred."""
         user = User(
             username='fred',
             email='fred@fred.com'
@@ -107,14 +122,30 @@ class AlbumsTestCase(TestCase):
         album_one.save()
         self.album_one = album_one
 
+    def test_upload_image_adds_new_album_instance(self):
+        """Test new album instance."""
+        self.assertEqual(Album.objects.count(), 6)
+
+    def test_album_assigned_to_bob(self):
+        """Test that fred is album builder."""
+        test_bob = User()
+        test_bob.username = 'test_bob'
+        test_bob.save()
+        test_album = Album(user=test_bob)
+        test_album.save()
+        self.assertTrue(test_album.user.username == "test_bob")
+
     def test_albums_created_are_private_by_default(self):
+        """Test default published status."""
         self.assertEqual(self.album_one.published, "PV")
 
-    def test_new_album_choose_PB(self):
+    def test_new_album_choose(self):
+        """Test assigned published status."""
         self.album_one.published = 'PB'
         self.assertEqual(self.album_one.published, "PB")
 
     def test_delete_user_with_albums_albums_removed(self):
+        """Test delete user all objects."""
         self.assertTrue(Album.objects.count() == 6)
         self.user.delete()
         self.assertTrue(Album.objects.count() == 0)

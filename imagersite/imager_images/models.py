@@ -2,7 +2,6 @@
 
 from django.db import models
 from django.contrib.auth.models import User
-from django.utils.encoding import python_2_unicode_compatible
 
 
 PUBLISHED_STATUS = (
@@ -10,6 +9,14 @@ PUBLISHED_STATUS = (
     ('PV', 'private'),
     ('SH', 'shared'),
 )
+
+
+class PhotoManager(models.Manager):
+    """Manage photos."""
+
+    def get_queryset(self):
+        """Return published photos."""
+        return super(PhotoManager, self).get_queryset().filter(published="PB").all()
 
 
 class Photo(models.Model):
@@ -27,6 +34,7 @@ class Photo(models.Model):
     )
     user = models.ForeignKey(
         User,
+        related_name="photobuild",
         null=False,
         on_delete=models.CASCADE
     )
@@ -35,9 +43,20 @@ class Photo(models.Model):
         null=True
     )
 
+    objects = models.Manager()
+    published_photos = PhotoManager()
+
     def __repr__(self):
-        """."""
+        """Print photo name."""
         return "<Photo: {}>".format(self.title)
+
+
+class AlbumManager(models.Manager):
+    """Manage albums."""
+
+    def get_queryset(self):
+        """Return published albums."""
+        return super(AlbumManager, self).get_queryset().filter(published="PB").all()
 
 
 class Album(models.Model):
@@ -55,19 +74,22 @@ class Album(models.Model):
     )
     user = models.ForeignKey(
         User,
+        related_name="albumbuild",
         null=False,
         on_delete=models.CASCADE
     )
     photos = models.ManyToManyField(
         Photo,
-        related_name='albums'
+        related_name='album'
     )
     cover = models.ForeignKey(
         Photo,
         null=True,
         related_name="+"
     )
+    objects = models.Manager()
+    published_albums = AlbumManager()
 
     def __repr__(self):
-        """."""
+        """Print album name."""
         return "<Album: {}>".format(self.title)

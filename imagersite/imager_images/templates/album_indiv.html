@@ -1,0 +1,16 @@
+{% extends 'imagersite/base.html' %}
+{% load thumbnail %}
+{%  block body %}
+    <h3>Photos in {{ album.title }}</h3>
+
+    <ul class="thumbnail">
+        {% for photo in photos %}
+        <li>
+            {% thumbnail photo.image "100x100" crop="center" as im %}
+                <img src="{{ im.url }}"> width="{{ im.width }}" height="{{ im.height }}">
+            {% endthumbnail %}
+            <a href="{% url 'imager_images:photo' photo.id %}">{{photo.title}}</a>
+        {% endfor %}
+        </li>
+    </ul>
+{% endblock %}
