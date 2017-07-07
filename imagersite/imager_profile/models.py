@@ -37,7 +37,7 @@ class ProfileManager(models.Manager):
 
 
 # Create your models here.
-@python_2_unicode_compatible
+# @python_2_unicode_compatible
 class ImagerProfile(models.Model):
     """A profile for users to our applications."""
 
