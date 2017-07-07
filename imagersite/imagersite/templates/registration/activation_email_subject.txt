@@ -1,1 +1,2 @@
-{%  "Account activation on" %} {{ site.name }}
+
+{{ user }}: Account activation on {{ site.name }}

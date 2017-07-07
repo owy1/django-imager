@@ -1,4 +1,4 @@
-{% extends 'imagersite/base.html' %}
+{% extends "imagersite/base.html" %}
 
 {% block title %}Login{% endblock %}
 
@@ -6,7 +6,7 @@
     <h2>Login</h2>
     <form id="user_form" method="post">
         {% csrf_token %}
-        {{ form.as_p}}
+        {{ form.as_p }}
         <button type="submit">Login</button>
     </form>
 {% endblock %}
