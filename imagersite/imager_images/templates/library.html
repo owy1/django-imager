@@ -1,0 +1,27 @@
+{% extends 'imagersite/base.html' %}
+{% load thumbnail %}
+{%  block body %}
+    <h3>{{ user.username }} Photo Library</h3>
+    <h5>ALBUMS</h5>
+    <ul class="thumbnail">
+        {% for album in albums %}
+        <li>
+            {% thumbnail album.cover.image "100x100" crop="center" as im %}
+                <img src="{{ im.url }}"> width="{{ im.width }}" height="{{ im.height }}">
+            {% endthumbnail %}
+            <a href="{% url 'imager_images:album' album.id %}">{{album.title}}</a>
+        {% endfor %}
+        </li>
+    </ul>
+    <h5>INDIVIDUAL IMAGE</h5>
+    <ul class="thumbnail">
+        {% for photo in photos %}
+        <li>
+            {% thumbnail photo.image "100x100" crop="center" as im %}
+                <img src="{{ im.url }}"> width="{{ im.width }}" height="{{ im.height }}">
+            {% endthumbnail %}
+            <a href="{% url 'imager_images:photo' photo.id %}">{{photo.title}}</a>
+        {% endfor %}
+        </li>
+    </ul>
+{% endblock %}

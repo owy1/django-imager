@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="eng">
+
+    <head>
+        <meta charset="utf-8">
+        <link href="{% static './static/style.css' %}" rel="stylesheet">
+        <title style='color: red'>{% block title %}imagersite homepage{% endblock %}</title>
+    </head>
+    
+    <body>
+    <div id="header">
+    {% block header %}
+        <h1 style='color: red'>imagersite homepage</h1>
+        <div class="img">
+        <image src="/media/user_images/animate0.png" width="600" height="250"/>
+        </div>
+    <a href="{% url 'home' %}">Home</a> | 
+    <div id="nav">
+        <ul class="navbar-nav">
+        {% if user.is_authenticated %}  
+            <li><a href="{% url 'imager_profile:user_profile' %}">{{ user }} Profile</a></li>
+            <li><a href="{% url 'imager_images:library' %}">{{ user }} Library</a></li>
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+            <li><a href="{% url 'registration_register' %}">Register</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+
+        </ul> <!-- navbar-nav -->
+    </div> <!--/#nav -->
+  
+    <hr />   
+    {% endblock %} <!-- header -->
+    </div>
+
+    <div id="body">
+    {% block body %}
+    {% endblock %}
+    </div>
+
+    <div id="content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <div id="footer">
+        {% block footer %}
+            <hr />
+        {% endblock %}
+    </div>
+
+    </body>
+</html>
