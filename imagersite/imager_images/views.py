@@ -2,58 +2,87 @@
 
 
 from imager_images.models import Album, Photo
-from django.shortcuts import render
-from django.http import HttpResponseForbidden
+from django.shortcuts import redirect
+from django.views.generic import ListView, TemplateView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
 
 
 # Create your views here.
 
 
-def library_view(request):
+class LibraryView(LoginRequiredMixin, TemplateView):
     """Display library view."""
-    if request.user.is_authenticated():
-        user = request.user
+
+    template_name = "imager_images/templates/library.html"
+    login_url = reverse_lazy("login")
+
+    def get_context_data(self):
+        """Library view context data."""
+        user = self.request.user
         album_list = user.albumbuild.all()
         photo_list = user.photobuild.all()
-        return render(
-            request,
-            "library.html",
-            {
-                "albums": album_list,
-                "photos": photo_list,
-            }
-        )
-    return HttpResponseForbidden()
+        return
+        {
+            "albums": album_list,
+            "photos": photo_list,
+        }
 
 
-def photo_gallery_view(request):
+class PhotoGalleryView(ListView):
     """Display photo gallery view."""
-    if request.user.is_authenticated():
-        photos = Photo.published_photos.all()
-        return render(request, "photo_gallery.html", {"photos": photos})
-    return HttpResponseForbidden()
+
+    template_name = "imager_images/templates/photo_gallery.html"
+    model = Photo
+    photos = Photo.published_photos.all()
+    cotext_object_name = "photos"
 
 
-def photo_indiv_view(request, pk):
-    """Display photo detail view."""
-    if request.user.is_authenticated():
-        photo = Photo.objects.get(pk=pk)
-        return render(request, "photo_indiv.html", {"photo": photo})
-    return HttpResponseForbidden()
-
-
-def album_gallery_view(request):
+class AlbumGalleryView(ListView):
     """Display album gallery view."""
-    if request.user.is_authenticated():
-        albums = Album.published_albums.filter(user=request.user)
-        return render(request, "album_gallery.html", {"albums": albums})
-    return HttpResponseForbidden()
+
+    template_name = "imager_images/templates/album_gallery.html"
+    model = Album
+    context_object_name = "albums"
+
+    def get_queryset(self):
+        """Return specifc user album."""
+        return Album.published_albums.filter(user=self.request.user)
 
 
-def album_indiv_view(request, pk):
-    """Display album detail view."""
-    if request.user.is_authenticated():
-        album = Album.objects.get(pk=pk)
-        photos = album.photos.all()
-        return render(request, "album_indiv.html", {"photos": photos, "album": album})
-    return HttpResponseForbidden()
+class AddPhotoView(LoginRequiredMixin, CreateView):
+    """Display addphoto view."""
+
+    template_name = "imager_images/templates/add_photo.html"
+    model = Photo
+    login_url = reverse_lazy("login")
+    fields = [
+        "title", "description", "date_published", "photo"
+    ]
+
+    def form_valid(self, form):
+        """User form."""
+        form.instance.user = self.request.user
+        photo = form.save()
+        photo.user = self.request.user
+        photo.save()
+        return redirect("/images/library/")
+
+
+class AddAlbumView(LoginRequiredMixin, CreateView):
+    """Display addalbum view."""
+
+    template_name = "imager_images/templates/add_album.html"
+    model = Album
+    login_url = reverse_lazy("login")
+    fields = [
+        "title", "description", "cover", "date_published", "photos"
+    ]
+
+    def form_valid(self, form):
+        """User form."""
+        form.instance.user = self.request.user
+        album = form.save()
+        album.user = self.request.user
+        album.save()
+        return redirect("/images/library/")

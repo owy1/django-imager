@@ -1,0 +1,11 @@
+{% extends 'imagersite/base.html' %}
+{%  block body %}
+    <h3>Add Photo</h3>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <p><input type="hidden" name="user" value="{{ usr }}"/></p>        
+        <input type="submit" value="Add Photo"/>
+    </form>
+    
+{% endblock %}

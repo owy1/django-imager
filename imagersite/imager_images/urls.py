@@ -1,14 +1,32 @@
 """URLs for the imager_images app."""
 
 from django.conf.urls import url
-from . import views
+from django.views.generic import DetailView
+from imager_images.models import Album, Photo
+from imager_images.views import (
+    LibraryView,
+    PhotoGalleryView,
+    AlbumGalleryView,
+    AddPhotoView,
+    AddAlbumView
+)
 
 app_name = 'imager_images'
 
 urlpatterns = [
-    url(r'^library/$', views.library_view, name="library"),
-    url(r'^photos/$', views.photo_gallery_view, name="photos"),
-    url(r'^photos/(?P<pk>\d+)/$', views.photo_indiv_view, name="photo"),
-    url(r'^albums/$', views.album_gallery_view, name="albums"),
-    url(r'^albums/(?P<pk>\d+)/$', views.album_indiv_view, name="album"),
+    url(r'^library/$', LibraryView.as_view(), name="library"),
+    url(r'^photos/$', PhotoGalleryView.as_view(), name="photos"),
+    url(r'^photos/add$', AddPhotoView.as_view(), name="add_photo"),
+    url(r'^photos/(?P<pk>\d+)/$', DetailView.as_view(
+        model=Photo,
+        template_name="imager_images/templates/photo_indiv.html",
+        context_object_name="photos"
+    ), name="photo"),
+    url(r'^albums/$', AlbumGalleryView.as_view(), name="albums"),
+    url(r'^albums/add$', AddAlbumView.as_view(), name="add_album"),
+    url(r'^albums/(?P<pk>\d+)/$', DetailView.as_view(
+        model=Album,
+        template_name="imager_images/templates/album_indiv.html",
+        context_object_name="albums"
+    ), name="album"),
 ]
