@@ -1,0 +1,2 @@
+
+{{ user }}: Account activation on {{ site.name }}
