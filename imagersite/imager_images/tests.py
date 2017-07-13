@@ -1,6 +1,6 @@
 """Create your tests here."""
 
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.conf import settings
 from imager_images.models import Photo, Album
@@ -19,6 +19,8 @@ class PhotoFactory(factory.django.DjangoModelFactory):
     """Creat photo factory."""
 
     class Meta:
+        """."""
+
         model = Photo
     title = factory.Sequence(lambda n: "Photo{}".format(n))
     description = fake.text(254)
@@ -34,6 +36,8 @@ class AlbumFactory(factory.django.DjangoModelFactory):
     """Creat album factory."""
 
     class Meta:
+        """."""
+
         model = Album
     title = factory.Sequence(lambda n: "Album{}".format(n))
     description = fake.text(254)
@@ -72,13 +76,13 @@ class PhotoTests(TestCase):
 
     def test_new_photo_is_private_by_default(self):
         """Test default published status."""
-        self.assertEqual(self.photo.published, "PV")
+        self.assertEqual(self.photo.published, "PB")
 
     def test_new_photo_choose(self):
         """Test assigned published status."""
-        self.photo.published = 'PB'
+        self.photo.published = 'PV'
         self.photo.save()
-        self.assertEqual(self.photo.published, "PB")
+        self.assertEqual(self.photo.published, "PV")
 
     def test_delete_user_with_photos_photos_removed(self):
         """Test delete user all objects."""
@@ -91,6 +95,62 @@ class PhotoTests(TestCase):
         directory_contents = os.listdir(upload_dir)
         name = self.photo.photo.name.split('/')[1]
         self.assertTrue(name in directory_contents)
+
+    def test_upload_photo_instance(self):
+        """Test upload photo with model properties."""
+        photo = SimpleUploadedFile(
+            name="MLKJR3.jpg",
+            content=open(os.path.join(HERE, 'static', 'MLKJR3.jpg'), 'rb').read(),
+            content_type="image/jpeg",
+        )
+        test_bob = User.objects.first()
+        test_pic = Photo(
+            user=test_bob,
+            title="test_title",
+            description="test_description",
+            photo=photo
+        )
+        test_pic.save()
+        self.assertIsInstance(test_pic.date_uploaded, datetime.date)
+        self.assertTrue(test_pic.title == "test_title")
+        self.assertTrue(test_pic.description == "test_description")
+        self.assertTrue(test_pic.user.username == test_bob.username)
+
+
+    def test_album_instance(self):
+        """Test create album instance with user."""
+        test_bob = User.objects.first()
+        test_album = Album(
+            user=test_bob,
+            title="test_title",
+            description="test_description"
+        )
+        test_album.save()
+        self.assertTrue(test_album.user.username == test_bob.username)
+
+
+    def test_photo_in_album(self):
+        """Test create photo instance with album."""
+        photo = SimpleUploadedFile(
+            name="MLKJR3.jpg",
+            content=open(os.path.join(HERE, 'static', 'MLKJR3.jpg'), 'rb').read(),
+            content_type="image/jpeg",
+        )
+        test_bob = User.objects.first()
+        test_album = Album(
+            title="test_album_title",
+            user=test_bob
+        )
+        test_pic = Photo(
+            user=test_bob,
+            title="test_photo_title",
+            description="test_description",
+            photo=photo
+        )
+        test_pic.save()
+        test_album.save()
+        test_pic.album.add(test_album)
+        self.assertTrue(test_album.photos.first().title == test_pic.title)
 
 
 class AlbumsTestCase(TestCase):
@@ -137,15 +197,57 @@ class AlbumsTestCase(TestCase):
 
     def test_albums_created_are_private_by_default(self):
         """Test default published status."""
-        self.assertEqual(self.album_one.published, "PV")
+        self.assertEqual(self.album_one.published, "PB")
 
     def test_new_album_choose(self):
         """Test assigned published status."""
-        self.album_one.published = 'PB'
-        self.assertEqual(self.album_one.published, "PB")
+        self.album_one.published = 'PV'
+        self.assertEqual(self.album_one.published, "PV")
 
     def test_delete_user_with_albums_albums_removed(self):
         """Test delete user all objects."""
         self.assertTrue(Album.objects.count() == 6)
         self.user.delete()
         self.assertTrue(Album.objects.count() == 0)
+
+
+class TemplatesTests(TestCase):
+    """."""
+
+    def setUp(self):
+        """."""
+        self.client = Client()
+
+
+    def test_to_libray_page_user_authenticated(self):
+        """Test library page."""
+        user = User(username='fred', email='test@test.com')
+        user.set_password('temporary')
+        user.save()
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get("/images/library", follow=True)
+        self.assertTrue(response.status_code == 200)
+        self.assertTrue(b'Photo Library' in response.content)
+
+
+    def test_to_photo_gallery_user_authenticated(self):
+        """Test photo gallery page."""
+        user = User(username='fred', email='test@test.com')
+        user.set_password('temporary')
+        user.save()
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get("/images/photos", follow=True)
+
+        self.assertTrue(response.status_code == 200)
+        self.assertTrue(b'Photos' in response.content)
+
+
+    def test_to_album_gallery_user_authenticated(self):
+        """Test photo gallery page."""
+        user = User(username='fred', email='test@test.com')
+        user.set_password('temporary')
+        user.save()
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get("/images/albums", follow=True)
+        self.assertTrue(response.status_code == 200)
+        self.assertTrue(b'Albums' in response.content)

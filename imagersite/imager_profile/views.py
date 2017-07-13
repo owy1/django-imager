@@ -12,7 +12,7 @@ def user_profile_view(request):
     user = request.user
     album_list = user.albumbuild.all()
 
-    return render(request, "user_profile.html", {"user": user, "albums": album_list})
+    return render(request, "imager_profile/user_profile.html", {"user": user, "albums": album_list})
 
 
 def others_profile_view(request, username):
@@ -21,4 +21,4 @@ def others_profile_view(request, username):
     user = User.objects.all().exclude(username=username)
     album_list = Album.published_albums.all().filter(user__username=username)
 
-    return render(request, "others_profile.html", {"user": user, "albums": album_list})
+    return render(request, "imager_profile/others_profile.html", {"user": user, "albums": album_list})

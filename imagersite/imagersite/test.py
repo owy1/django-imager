@@ -38,25 +38,23 @@ class RegistrationTests(TestCase):
         )
         self.assertTrue(User.objects.count() == 1)
 
-#django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 1: '"Account'. Did you forget to register or load this tag?
-
-    # def test_upon_registration_new_user_notactive(self):
-    #     """Test registration process."""
-    #     response = self.client.get(reverse('registration_register'))
-    #     html = BeautifulSoup(response.rendered_content, 'html.parser')
-    #     token = html.find('input', {'name': 'csrfmiddlewaretoken'}).attrs['value']
-    #     data_dict = {
-    #         'csrfmiddlewaretoken': token,
-    #         'username': 'bob',
-    #         'email': 'bob@bob.com',
-    #         'password1': 'iambob_thebobbiest',
-    #         'password2': 'iambob_thebobbiest'
-    #     }
-    #     response = self.client.post(
-    #         reverse('registration_register'),
-    #         data_dict
-    #     )
-    #     self.assertFalse(User.objects.first().is_active)
+    def test_upon_registration_new_user_notactive(self):
+        """Test registration process."""
+        response = self.client.get(reverse('registration_register'))
+        html = BeautifulSoup(response.rendered_content, 'html.parser')
+        token = html.find('input', {'name': 'csrfmiddlewaretoken'}).attrs['value']
+        data_dict = {
+            'csrfmiddlewaretoken': token,
+            'username': 'bob',
+            'email': 'bob@bob.com',
+            'password1': 'iambob_thebobbiest',
+            'password2': 'iambob_thebobbiest'
+        }
+        response = self.client.post(
+            reverse('registration_register'),
+            data_dict
+        )
+        self.assertFalse(User.objects.first().is_active)
 
     def test_valid_user_login(self):
         """Test login process."""

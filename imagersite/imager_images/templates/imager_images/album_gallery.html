@@ -6,10 +6,10 @@
     <ul class="thumbnail">
         {% for album in albums %}
         <li>
-            {% thumbnail album.cover.image "100x100" crop="center" as im %}
-                <img src="{{ im.url }}"> width="{{ im.width }}" height="{{ im.height }}">
+            {% thumbnail album.cover.photo "100x100" crop="center" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
             {% endthumbnail %}
-            <a href="{% url 'imager_images:album' album.id %}">{{album.title}}</a>
+            <a href="{% url 'imager_images:album' %}">{{album.title}}</a>
         {% endfor %}
         </li>
     </ul>

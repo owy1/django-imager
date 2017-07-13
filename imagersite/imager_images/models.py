@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from sorl.thumbnail import ImageField
 
 
 PUBLISHED_STATUS = (
@@ -30,7 +31,7 @@ class Photo(models.Model):
     published = models.CharField(
         max_length=2,
         choices=PUBLISHED_STATUS,
-        default='PV'
+        default='PB'
     )
     user = models.ForeignKey(
         User,
@@ -49,6 +50,10 @@ class Photo(models.Model):
     def __repr__(self):
         """Print photo name."""
         return "<Photo: {}>".format(self.title)
+
+    def __str__(self):
+        """Print photo name."""
+        return self.__repr__()
 
 
 class AlbumManager(models.Manager):
@@ -70,7 +75,7 @@ class Album(models.Model):
     published = models.CharField(
         max_length=2,
         choices=PUBLISHED_STATUS,
-        default='PV'
+        default='PB'
     )
     user = models.ForeignKey(
         User,

@@ -1,0 +1,8 @@
+{% extends 'imagersite/base.html' %}
+{%  block body %}
+    <h5>{{ photo.title }} {{ photo.date_published }}</h5>
+    <p>{{ photo.description }}</p>
+    <image src="{{ photo.photo.url }}">
+    <!-- <image src="/media/user_images/animate0.png"/> -->
+    <h3>{{ user.username }}</h3>
+{% endblock %}

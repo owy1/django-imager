@@ -6,6 +6,7 @@ from django.shortcuts import redirect
 from django.views.generic import ListView, TemplateView, CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.shortcuts import render
 
 
 # Create your views here.
@@ -14,7 +15,7 @@ from django.urls import reverse_lazy
 class LibraryView(LoginRequiredMixin, TemplateView):
     """Display library view."""
 
-    template_name = "imager_images/templates/library.html"
+    template_name = "imager_images/library.html"
     login_url = reverse_lazy("login")
 
     def get_context_data(self):
@@ -22,8 +23,7 @@ class LibraryView(LoginRequiredMixin, TemplateView):
         user = self.request.user
         album_list = user.albumbuild.all()
         photo_list = user.photobuild.all()
-        return
-        {
+        return {
             "albums": album_list,
             "photos": photo_list,
         }
@@ -32,16 +32,16 @@ class LibraryView(LoginRequiredMixin, TemplateView):
 class PhotoGalleryView(ListView):
     """Display photo gallery view."""
 
-    template_name = "imager_images/templates/photo_gallery.html"
+    template_name = "imager_images/photo_gallery.html"
     model = Photo
     photos = Photo.published_photos.all()
-    cotext_object_name = "photos"
+    context_object_name = "photos"
 
 
 class AlbumGalleryView(ListView):
     """Display album gallery view."""
 
-    template_name = "imager_images/templates/album_gallery.html"
+    template_name = "imager_images/album_gallery.html"
     model = Album
     context_object_name = "albums"
 
@@ -53,7 +53,7 @@ class AlbumGalleryView(ListView):
 class AddPhotoView(LoginRequiredMixin, CreateView):
     """Display addphoto view."""
 
-    template_name = "imager_images/templates/add_photo.html"
+    template_name = "imager_images/add_photo.html"
     model = Photo
     login_url = reverse_lazy("login")
     fields = [
@@ -72,7 +72,7 @@ class AddPhotoView(LoginRequiredMixin, CreateView):
 class AddAlbumView(LoginRequiredMixin, CreateView):
     """Display addalbum view."""
 
-    template_name = "imager_images/templates/add_album.html"
+    template_name = "imager_images/add_album.html"
     model = Album
     login_url = reverse_lazy("login")
     fields = [
