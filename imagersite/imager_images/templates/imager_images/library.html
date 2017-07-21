@@ -10,6 +10,7 @@
                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
             {% endthumbnail %}
             <a href="{% url 'imager_images:album' album.id %}">{{album.title}}</a>
+            <a href="{% url 'imager_images:edit_album' album.id %}">Edit Album</a>
         </li>
         {% endfor %}
     </ul>
@@ -21,6 +22,7 @@
                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
             {% endthumbnail %}
             <a href="{% url 'imager_images:photo' photo.id %}">{{photo.title}}</a>
+            <a href="{% url 'imager_images:edit_photo' photo.id %}">Edit Photo</a>
         {% endfor %}
         </li>
     </ul>

@@ -37,7 +37,7 @@ class ProfileManager(models.Manager):
 
 
 # Create your models here.
-# @python_2_unicode_compatible
+@python_2_unicode_compatible
 class ImagerProfile(models.Model):
     """A profile for users to our applications."""
 
@@ -86,9 +86,9 @@ class ImagerProfile(models.Model):
         social_status: {}
         """.format(self.user.username, self.camera_type, self.photography_style, self.social_status)
 
-    # def __str__(self):
-    #     """Print username."""
-    #     self.__repr__()
+    def __str__(self):
+        """Print username."""
+        return self.__repr__()
 
 
 @receiver(post_save, sender=User)

@@ -1,6 +1,12 @@
 {% extends 'imagersite/base.html' %}
 
 {% block body %}
+
+<div id="nav">
+<a href="{% url 'imager_profile:edit_profile' %}">Edit Profile</a> | <a href="{% url 'imager_images:add_album' %}">Add Album</a> |
+            <a href="{% url 'imager_images:add_photo' %}">Add Photo</a>
+</div>
+
     <h3>{{ user.username }} Profile</h3>
     <p>Email: {{ user.email }}</p>
     <p>Social Status: {{ user.profile.social_status }}</p>

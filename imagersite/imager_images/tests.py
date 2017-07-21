@@ -3,12 +3,16 @@
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.urls import reverse_lazy
+from imager_images.views import AddPhotoView, AddAlbumView
+from imager_images.forms import PhotoForm, AlbumForm
 from imager_images.models import Photo, Album
 import factory
 import faker
 from django.core.files.uploadedfile import SimpleUploadedFile
 import os
 import datetime
+from bs4 import BeautifulSoup
 
 
 HERE = os.path.dirname(__file__)
@@ -116,7 +120,6 @@ class PhotoTests(TestCase):
         self.assertTrue(test_pic.description == "test_description")
         self.assertTrue(test_pic.user.username == test_bob.username)
 
-
     def test_album_instance(self):
         """Test create album instance with user."""
         test_bob = User.objects.first()
@@ -127,7 +130,6 @@ class PhotoTests(TestCase):
         )
         test_album.save()
         self.assertTrue(test_album.user.username == test_bob.username)
-
 
     def test_photo_in_album(self):
         """Test create photo instance with album."""
@@ -217,37 +219,74 @@ class TemplatesTests(TestCase):
     def setUp(self):
         """."""
         self.client = Client()
-
+        user = User(
+            username='fred',
+            email='fred@fred.com'
+        )
+        user.set_password('temporary')
+        user.save()
+        self.user = user
+        photos = [PhotoFactory.build() for i in range(20)]
+        for photo in photos:
+            photo.user = user
+            photo.save()
+        user.save()
 
     def test_to_libray_page_user_authenticated(self):
-        """Test library page."""
-        user = User(username='fred', email='test@test.com')
-        user.set_password('temporary')
-        user.save()
+        """Test library page redirect."""
         self.client.login(username='fred', password='temporary')
-        response = self.client.get("/images/library", follow=True)
-        self.assertTrue(response.status_code == 200)
-        self.assertTrue(b'Photo Library' in response.content)
+        response = self.client.get("/images/library/")
 
+        self.assertTrue(response.status_code == 200)
+        self.assertTemplateUsed(response, 'imager_images/library.html')
 
     def test_to_photo_gallery_user_authenticated(self):
-        """Test photo gallery page."""
-        user = User(username='fred', email='test@test.com')
-        user.set_password('temporary')
-        user.save()
-        self.client.login(username='fred', password='temporary')
-        response = self.client.get("/images/photos", follow=True)
+        """Test photo gallery page redirect."""
+        self.client.login(username='Fred', password='temporary')
+        idx = self.user.photobuild.first().id
+        response = self.client.get("/images/photos/{}/".format(idx))
 
-        self.assertTrue(response.status_code == 200)
-        self.assertTrue(b'Photos' in response.content)
-
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'imager_images/photo_indiv.html')
 
     def test_to_album_gallery_user_authenticated(self):
-        """Test photo gallery page."""
-        user = User(username='fred', email='test@test.com')
-        user.set_password('temporary')
-        user.save()
+        """Test album gallery page redirect."""
         self.client.login(username='fred', password='temporary')
-        response = self.client.get("/images/albums", follow=True)
+        response = self.client.get("/images/albums/")
         self.assertTrue(response.status_code == 200)
-        self.assertTrue(b'Albums' in response.content)
+        self.assertTemplateUsed(response, 'imager_images/album_gallery.html')
+
+    def test_when_no_image(self):
+        """Placeholder appears with default image."""
+        response = self.client.get(reverse_lazy('home'))
+        html = BeautifulSoup(response.content, 'html.parser')
+        self.assertTrue(html.find('image', {'src': "/MEDIA/user_images/animate0.png"}))
+
+    def test_route_lists_images(self):
+        """Test profile page redirect."""
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get("/profile/")
+        self.assertTrue(response.status_code == 200)
+
+    def test_add_photo_form(self):
+        """Test add photo form."""
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get("/images/photos/add/")
+        the_form = PhotoForm.base_fields
+        self.assertTrue('title' in the_form)
+        self.assertTrue(response.status_code == 200)
+
+    def test_add_album_form(self):
+        """Test add album form."""
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get("/images/albums/add/")
+        the_form = AlbumForm.base_fields
+        self.assertTrue('title' in the_form)
+        self.assertTrue(response.status_code == 200)
+
+    def test_when_at_least_one_image(self):
+        """Placeholder appears with at least one image."""
+        self.client.login(username='fred', password='temporary')
+        response = self.client.get('/images/library/')
+        html = BeautifulSoup(response.content, 'html.parser')
+        self.assertTrue(len(html.find_all('img')) == 20)

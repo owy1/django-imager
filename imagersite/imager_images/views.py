@@ -2,11 +2,13 @@
 
 
 from imager_images.models import Album, Photo
+from imager_images.forms import PhotoForm, AlbumForm
 from django.shortcuts import redirect
 from django.views.generic import ListView, TemplateView, CreateView
+from django.views.generic.edit import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
-from django.shortcuts import render
+# from django.shortcuts import render
 
 
 # Create your views here.
@@ -56,10 +58,10 @@ class AddPhotoView(LoginRequiredMixin, CreateView):
     template_name = "imager_images/add_photo.html"
     model = Photo
     login_url = reverse_lazy("login")
-    fields = [
-        "title", "description", "date_published", "photo"
-    ]
-
+    # fields = [
+    #     "title", "description", "date_published", "photo"
+    # ]
+    form_class = PhotoForm
     def form_valid(self, form):
         """User form."""
         form.instance.user = self.request.user
@@ -73,6 +75,45 @@ class AddAlbumView(LoginRequiredMixin, CreateView):
     """Display addalbum view."""
 
     template_name = "imager_images/add_album.html"
+    model = Album
+    login_url = reverse_lazy("login")
+    # fields = [
+    #     "title", "description", "cover", "date_published", "photos"
+    # ]
+    form_class = AlbumForm
+
+    def form_valid(self, form):
+        """User form."""
+        form.instance.user = self.request.user
+        album = form.save()
+        album.user = self.request.user
+        album.save()
+        return redirect("/images/library/")
+
+
+class EditPhotoView(LoginRequiredMixin, UpdateView):
+    """Display editphoto view."""
+
+    template_name = "imager_images/edit_photo.html"
+    model = Photo
+    login_url = reverse_lazy("login")
+    fields = [
+        "title", "description", "date_published", "photo"
+    ]
+
+    def form_valid(self, form):
+        """User form."""
+        form.instance.user = self.request.user
+        photo = form.save()
+        photo.user = self.request.user
+        photo.save()
+        return redirect("/images/library/")
+
+
+class EditAlbumView(LoginRequiredMixin, UpdateView):
+    """Display editalbum view."""
+
+    template_name = "imager_images/edit_album.html"
     model = Album
     login_url = reverse_lazy("login")
     fields = [

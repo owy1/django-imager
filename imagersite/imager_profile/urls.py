@@ -7,7 +7,7 @@ app_name = 'imager_profile'
 
 
 urlpatterns = [
-    url(r'^$', views.user_profile_view, name="user_profile"),
-    # url(r'^profile/(?P<username>[\w.@+-]+)/$', views.others_profile_view, name="others_profile")
-    url(r'^(?P<username>[\w.@+-]+)$', views.others_profile_view, name="others_profile")
+    url(r'^$', views.UserProfileView.as_view(), name="user_profile"),
+    url(r'^edit/$', views.EditUserProfileView.as_view(), name="edit_profile"),
+    url(r'^(?P<username>[\w.@+-]+)$', views.OthersProfileView.as_view(), name="others_profile")
 ]

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from bs4 import BeautifulSoup
 from imager_profile.models import ImagerProfile
+from imager_profile.forms import ImagerProfileForm
 from imagersite.views import home_view
 import factory
 # Create your tests here.
@@ -117,3 +118,14 @@ class ProfileTestCase(TestCase):
     def test_there_are_as_many_users_in_profile(self):
         """Test the number of profile objects eqaul user objects."""
         self.assertEquals(len(User.objects.all()), len(ImagerProfile.objects.all()))
+
+    def test_edit_user_form(self):
+        """Test edit user form."""
+        test_bob = User(username='bob')
+        test_bob.set_password('temporary')
+        test_bob.save()
+        self.client.login(username='bob', password='temporary')
+        response = self.client.get("/profile/edit/")
+        the_form = ImagerProfileForm.base_fields
+        self.assertTrue('website' in the_form)
+        self.assertTrue(response.status_code == 200)

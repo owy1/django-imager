@@ -12,7 +12,6 @@ import os
 
 def home_view(request):
     """View for homepage."""
-
     userlist = User.objects.all().exclude(username='owy1')
 
     all_photos = Photo.published_photos.all()

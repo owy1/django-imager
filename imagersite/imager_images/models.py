@@ -3,6 +3,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from sorl.thumbnail import ImageField
+from django.utils.encoding import python_2_unicode_compatible
 
 
 PUBLISHED_STATUS = (
@@ -19,7 +20,7 @@ class PhotoManager(models.Manager):
         """Return published photos."""
         return super(PhotoManager, self).get_queryset().filter(published="PB").all()
 
-
+@python_2_unicode_compatible
 class Photo(models.Model):
     """Create a photo model."""
 
@@ -63,7 +64,7 @@ class AlbumManager(models.Manager):
         """Return published albums."""
         return super(AlbumManager, self).get_queryset().filter(published="PB").all()
 
-
+@python_2_unicode_compatible
 class Album(models.Model):
     """Create an album model."""
 
@@ -98,3 +99,8 @@ class Album(models.Model):
     def __repr__(self):
         """Print album name."""
         return "<Album: {}>".format(self.title)
+
+
+    def __str__(self):
+        """Print album name."""
+        return self.__repr__()
