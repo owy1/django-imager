@@ -36,9 +36,11 @@ class PhotoGalleryView(ListView):
 
     template_name = "imager_images/photo_gallery.html"
     model = Photo
-    photos = Photo.published_photos.all()
     context_object_name = "photos"
 
+    def get_queryset(self):
+        """Get all public photos."""
+        return Photo.published_photos.all()
 
 class AlbumGalleryView(ListView):
     """Display album gallery view."""
@@ -48,8 +50,8 @@ class AlbumGalleryView(ListView):
     context_object_name = "albums"
 
     def get_queryset(self):
-        """Return specifc user album."""
-        return Album.published_albums.filter(user=self.request.user)
+        """Return all public albums."""
+        return Album.published_albums.all()
 
 
 class AddPhotoView(LoginRequiredMixin, CreateView):

@@ -33,14 +33,12 @@ class OthersProfileView(DetailView):
     template_name = "imager_profile/others_profile.html"
     model = ImagerProfile
 
-    def get(self, request):
+    def get(self, request, username):
         """."""
-        user = request.user
-        others = User.objects.all().exclude(username='owy1')
-        others = User.objects.all().exclude(user__username=user.username)
-        album_list = Album.published_albums.all().filter(user__username=user.username)
 
-        return self.render_to_response({"others": others, "albums": album_list})
+        user = User.objects.all().filter(username=username).first()
+        album_list = user.albumbuild.all()
+        return self.render_to_response({"user": user, "albums": album_list})
 
 
 class EditUserProfileView(LoginRequiredMixin, UpdateView):
