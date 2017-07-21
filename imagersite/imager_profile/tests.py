@@ -1,6 +1,6 @@
 from django.test import TestCase, Client, RequestFactory
 from django.contrib.auth.models import User
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from bs4 import BeautifulSoup
 from imager_profile.models import ImagerProfile
 from imager_profile.forms import ImagerProfileForm
@@ -61,9 +61,9 @@ class ProfileTestCase(TestCase):
 
     def test_home_view_return_status_code_200(self):
         """Home View response is 200 OK."""
-        get_req = self.req_factory.get('/')
-        response = home_view(get_req)
-        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse_lazy('home'))
+        self.assertTemplateUsed(response, 'imagersite/home.html')
+        # self.assertEqual(response.status_code, 200)
 
     def test_home_route_return_status_code_200(self):
         """Home route response is 200 OK."""

@@ -14,7 +14,6 @@ def home_view(request):
     """View for homepage."""
     userlist = User.objects.all().exclude(username='owy1')
     userlist = userlist.exclude(username=request.user.username)
-
     all_photos = Photo.published_photos.all()
     if len(all_photos):
         random_photo = random.choice(all_photos).photo.url
