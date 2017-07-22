@@ -1,0 +1,27 @@
+{% extends 'imagersite/base.html' %}
+
+{% block body %}
+
+<div id="nav">
+<a href="{% url 'imager_profile:edit_profile' %}">Edit Profile</a> | <a href="{% url 'imager_images:add_album' %}">Add Album</a> |
+            <a href="{% url 'imager_images:add_photo' %}">Add Photo</a>
+</div>
+
+    <h3>{{ user.username }} Profile</h3>
+    <p>Email: {{ user.email }}</p>
+    <p>Social Status: {{ user.profile.social_status }}</p>
+    <p>Website: {{ user.profile.website }}</p>
+    <p>Camera Type: {{ user.profile.camera_type }}</p>
+    <p>Photography Style: {{ user.profile.photography_style }}</p>
+    <p>Age: {{ user.profile.age }}</p>
+    <p>Location: {{ user.profile.location }}</p>
+    <p>Job: {{ user.profile.job }}</p>
+    <h5>Albums:</h5>
+    <ul>
+        {% for album in albums %}
+        <li>
+            <a href="{% url 'imager_images:album' album.id %}">{{ album.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

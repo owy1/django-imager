@@ -1,0 +1,22 @@
+language: python
+python:
+  - "2.7"
+  - "3.6"
+
+env:
+  - SECRET_KEY='mashedpotatoes' DATABASE_NAME='test_db2' DATABASE_USER='postgres' DATABASE_HOST="127.0.0.1" DATABASE_PASSWORD=''
+
+install:
+  - pip install -U pip
+  - pip install -r requirements.pip
+
+services:
+  - postgresql
+
+before_script:
+  - psql -c 'create database test_db2;' -U postgres
+
+script: 
+  - python imagersite/manage.py migrate
+  - python imagersite/manage.py test imagersite
+
